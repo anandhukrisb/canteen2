@@ -1,0 +1,23 @@
+# Python
+*.pyc
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+.venv/
+env/
+venv/
+ENV/
+
+# Django-specific
+*.log
+*.pot
+*.sqlite3
+local_settings.py
+media/
+static/
+
+# IDE-specific (VS Code, PyCharm, etc.)
+.idea/
+.vscode/
+*.swp
+*~
