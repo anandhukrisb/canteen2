@@ -1,9 +1,12 @@
 :root {
-    --primary-color: #0d963d;
-    /* R-Bites Green */
-    --primary-dark: #077a2e;
-    --accent-color: #d4edda;
-    --bg-color: #f7f9fc;
+    --primary-color: #9f734f;
+    /* Soft Brown */
+    --primary-dark: #7E5130;
+    /* Previous Primary, now Darker Shade */
+    --accent-color: #FFF4E0;
+    /* Creamy Latte */
+    --bg-color: #FFF4E0;
+    /* Light Peach/Orange */
     --text-dark: #1a1a1a;
     --text-gray: #666;
     --white: #ffffff;
@@ -493,7 +496,7 @@ body {
 .btn-primary {
     background-color: var(--primary-color);
     color: white;
-    box-shadow: 0 2px 4px rgba(13, 150, 61, 0.2);
+    box-shadow: 0 2px 4px rgba(159, 115, 79, 0.2);
 }
 
 .btn-primary:hover {
