@@ -711,16 +711,10 @@
                     </div>
                     <div class="logo-text">
                         <h1>R-Bites</h1>
-                        <p>Dine-in ordering made easy</p>
+                        <p>Refreshments, right to your seat</p>
                     </div>
                 </div>
-                <div class="seat-badge">
-                    <svg class="icon-sm" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                    </svg>
-                    <span>Seat: <span id="seatNumber">C1</span></span>
-                </div>
+
             </div>
         </header>
     </div>
@@ -751,7 +745,7 @@
         </div>
         <div id="customizationOptions"></div>
         <div class="modal-action">
-            <button class="primary-button" onclick="placeDirectOrder()">Order</button>
+            <button class="primary-button" onclick="placeDirectOrder()">Request Refreshment</button>
         </div>
     </div>
 
@@ -760,8 +754,8 @@
 
     <!-- Confirmation Modal -->
     <div class="confirmation-modal" id="confirmationModal">
-        <h3 class="confirmation-title">Confirm Order</h3>
-        <p class="confirmation-text">Are you sure you want to place this order?</p>
+        <h3 class="confirmation-title">Confirm Request</h3>
+        <p class="confirmation-text">Are you sure you want to place this request?</p>
         <div class="confirmation-actions">
             <button class="btn-cancel" onclick="closeConfirmationModal()">Cancel</button>
             <button class="btn-confirm" onclick="confirmOrder()">Yes, Confirm</button>
@@ -805,7 +799,8 @@
             });
 
             // Seat Number (from Backend)
-            document.getElementById('seatNumber').textContent = "{{ seat.seat_number }}";
+            // Seat Number (removed)
+
 
             // Render food items
             renderFoodItems();
@@ -900,7 +895,7 @@
 
         // Confirm and Place Order
         async function confirmOrder() {
-            const seatNumber = document.getElementById('seatNumber').textContent;
+
 
             // Prepare Data
             const itemId = currentCustomizationItem.id;
