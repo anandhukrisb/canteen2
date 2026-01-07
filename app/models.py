@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 import uuid
 
 # --------------------------------------------------
@@ -174,3 +175,15 @@ class Order(models.Model):
 
     def __str__(self):
         return f"{self.item.name} → {self.seat}"
+
+
+
+# -----------------------------
+# CANTEEN MANAGER
+# -----------------------------
+class CanteenManager(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    canteen = models.ForeignKey(Canteen, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} → {self.canteen.name}"

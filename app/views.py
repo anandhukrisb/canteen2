@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse,HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.db import transaction
 from .models import Order, QRCode, MenuItem, ItemOption
@@ -7,32 +7,50 @@ import json
 
 
 def dashboard(request):
-
+    #allows only canteen managers
+    if not hasattr(request.user,"canteenmanager"):
+        return HttpResponseForbidden("Not a canteen manager")
+    # Loads dashboard page
     return render(request, 'adminDash/index.html')
 
 def get_new_orders(request):
+    #getting logged in manager
+    manager = request.user.canteenmanager
 
-    orders = Order.objects.filter(status='NEW').order_by('-created_at')
+    #finding associated canteen 
+    canteen = manager.canteen
+
+    #fetching orders of the specific canteen
+    orders = Order.objects.filter(seat__lab__canteen=canteen,status='NEW').order_by('-created_at')
     return render(request, 'adminDash/order_list_partial.html', {'orders': orders})
 
 @require_POST
 def mark_order_done(request, order_id):
-    
-    order = get_object_or_404(Order, order_id=order_id)
+    #getting logged in manager
+    manager = request.user.manager
+    canteen = manager.canteen
+
+    order = get_object_or_404(Order, order_id=order_id,seat__lab__canteen=canteen)
     order.status = 'DELIVERED'
     order.save()
     return JsonResponse({'status': 'success'})
 
 
 def scan_qr(request, qr_id):
+    # Validate QR code
     qr_obj = get_object_or_404(QRCode, qr_id=qr_id, is_active=True)
+
+    # Get seat, lab and canteen
     seat = qr_obj.seat
     canteen = seat.lab.canteen
-    
+
+    # Fetch menu only from this canteen
     menu_items = MenuItem.objects.filter(canteen=canteen, is_available=True).prefetch_related('options')
     
     # Serialize for frontend JS
     items_data = []
+
+    #loop       
     for item in menu_items:
         options_list = []
         if item.options.exists():
@@ -73,9 +91,12 @@ def place_order(request, qr_id):
     """
     Handles order submission from the user.
     """
+     # Validate QR
     qr_obj = get_object_or_404(QRCode, qr_id=qr_id, is_active=True)
+
+     # Get selected item
     item_id = request.POST.get('item_id')
-    option_id = request.POST.get(f'option_{item_id}') # Name format: option_<itemId>
+    option_id = request.POST.get(f'option_{item_id}') 
     
     if not item_id:
         return HttpResponse("Please select an item", status=400)
@@ -83,6 +104,7 @@ def place_order(request, qr_id):
     item = get_object_or_404(MenuItem, id=item_id)
     option = None
     
+    # Optional customization
     if option_id:
         option = get_object_or_404(ItemOption, id=option_id)
         # Validation: Option must belong to Item
