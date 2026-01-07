@@ -10,9 +10,13 @@ const mainNav = document.getElementById('main-nav');
 function init() {
     // Initial fetch
     fetchOrders();
+    fetchStats();
 
     // Set up polling
-    const pollId = setInterval(fetchOrders, POLL_INTERVAL);
+    const pollId = setInterval(() => {
+        fetchOrders();
+        fetchStats();
+    }, POLL_INTERVAL);
 
     // Navbar toggle
     if (navToggle && mainNav) {
@@ -34,9 +38,52 @@ function init() {
     }
 }
 
+let currentFilter = 'NEW';
+
+function setFilter(status) {
+    currentFilter = status;
+
+    // Update active class on buttons
+    document.querySelectorAll('.toggle-option').forEach(btn => {
+        if (btn.dataset.filter === status) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Toggle slider position
+    const toggleSwitch = document.querySelector('.toggle-switch');
+    if (toggleSwitch) {
+        if (status === 'DELIVERED') {
+            toggleSwitch.classList.add('show-done');
+        } else {
+            toggleSwitch.classList.remove('show-done');
+        }
+    }
+
+    fetchOrders();
+}
+
+async function fetchStats() {
+    try {
+        const response = await fetch('/get_order_stats/');
+        if (!response.ok) return;
+        const data = await response.json();
+
+        const countNew = document.getElementById('count-new');
+        const countDone = document.getElementById('count-done');
+
+        if (countNew) countNew.textContent = data.new_count;
+        if (countDone) countDone.textContent = data.delivered_count;
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+    }
+}
+
 async function fetchOrders() {
     try {
-        const response = await fetch('/get_new_orders/');
+        const response = await fetch(`/get_new_orders/?status=${currentFilter}`);
         if (!response.ok) {
             console.error('Network response was not ok');
             return;
@@ -71,6 +118,7 @@ async function markAsDone(orderId) {
         if (response.ok) {
             // Immediate feedback: refresh orders to show updated state
             fetchOrders();
+            fetchStats();
         } else {
             console.error('Failed to update status:', response.status);
             if (response.status === 405) {

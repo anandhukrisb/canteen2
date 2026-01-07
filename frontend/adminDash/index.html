@@ -37,15 +37,15 @@
     </header>
 
     <main class="dashboard-container">
-        <!-- Filter removed for simplicity as per requirement (only NEW orders in list) -->
-        <div class="filter-toggle-container" style="display:none;">
+        <!-- Filter active -->
+        <div class="filter-toggle-container">
             <div class="toggle-switch">
                 <div class="toggle-slider"></div>
                 <button class="toggle-option active" data-filter="NEW" onclick="setFilter('NEW')">
-                    Pending <span class="count-badge" id="count-new">0</span>
+                    Pending <span class="count-badge" id="count-new">{{ new_count|default:0 }}</span>
                 </button>
-                <button class="toggle-option" data-filter="DONE" onclick="setFilter('DONE')">
-                    Completed <span class="count-badge" id="count-done">0</span>
+                <button class="toggle-option" data-filter="DELIVERED" onclick="setFilter('DELIVERED')">
+                    Completed <span class="count-badge" id="count-done">{{ delivered_count|default:0 }}</span>
                 </button>
             </div>
         </div>

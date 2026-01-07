@@ -7,13 +7,26 @@ import json
 
 
 def dashboard(request):
-
-    return render(request, 'adminDash/index.html')
+    new_count = Order.objects.filter(status='NEW').count()
+    delivered_count = Order.objects.filter(status='DELIVERED').count()
+    context = {
+        'new_count': new_count,
+        'delivered_count': delivered_count
+    }
+    return render(request, 'adminDash/index.html', context)
 
 def get_new_orders(request):
-
-    orders = Order.objects.filter(status='NEW').order_by('-created_at')
+    status = request.GET.get('status', 'NEW')
+    orders = Order.objects.filter(status=status).order_by('-created_at')
     return render(request, 'adminDash/order_list_partial.html', {'orders': orders})
+
+def get_order_stats(request):
+    new_count = Order.objects.filter(status='NEW').count()
+    delivered_count = Order.objects.filter(status='DELIVERED').count()
+    return JsonResponse({
+        'new_count': new_count,
+        'delivered_count': delivered_count
+    })
 
 @require_POST
 def mark_order_done(request, order_id):
