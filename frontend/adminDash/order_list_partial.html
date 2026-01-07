@@ -1,0 +1,29 @@
+{% for order in orders %}
+<li class="order-card {{ order.status }}" id="order-{{ order.id }}">
+    <div class="card-header">
+        <div class="order-location">
+            {% if order.status == 'NEW' %}<span class="new-indicator"></span>{% endif %}
+            Lab: {{ order.seat.lab.name }} | Seat: {{ order.seat.seat_number }}
+        </div>
+        <span class="status-badge {{ order.status }}">{{ order.get_status_display }}</span>
+    </div>
+    <div class="card-body">
+        <div class="product-name">{{ order.item.name }}</div>
+        {% if order.option %}
+        <div class="order-options">{{ order.option.name }}</div>
+        {% endif %}
+        <div class="order-id">#{{ order.id|stringformat:"s"|slice:":8" }}...</div>
+    </div>
+    {% if order.status == 'NEW' %}
+    <div class="card-footer">
+        <button class="btn btn-primary js-mark-done" data-id="{{ order.id }}">
+            Mark as Done
+        </button>
+    </div>
+    {% endif %}
+</li>
+{% empty %}
+<li style="text-align:center; padding:40px; color:#999; font-style:italic;">
+    No new orders
+</li>
+{% endfor %}

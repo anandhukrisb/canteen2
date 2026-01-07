@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed!</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #f5f7f6;
+            text-align: center;
+            color: #333;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            color: #2e7d32;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .btn-again {
+            padding: 12px 24px;
+            background: #d32f2f;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .btn-again:hover {
+            background: #b71c1c;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="success-icon">✓</div>
+    <h1>Order Placed!</h1>
+    <p>Your order for <strong>{{ seat.lab.name }} - Seat {{ seat.seat_number }}</strong> has been sent to the kitchen.
+    </p>
+
+    <!-- No back button as per requirement -->
+    <!-- <a href="{% url 'scan_qr' qr_id %}" class="btn-again">Order Something Else</a> -->
+
+</body>
+
+</html>
