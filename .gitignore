@@ -1,1 +1,30 @@
-*env
+
+# Python
+*.pyc
+__pycache__/
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Django-specific
+*.log
+*.pot
+local_settings.py
+db.sqlite3
+media/ # Or whatever you named your media directory
+staticfiles/ # Directory for collectstatic output
+
+# IDE-specific (optional, depending on your IDE)
+.idea/ # For PyCharm
+.vscode/ # For VS Code
+*.swp
+.DS_Store # macOS system files
+Thumbs.db # Windows system files
+
+# Testing
+.coverage
+.tox/
+.eggs/
+*.egg-info/
