@@ -903,54 +903,25 @@
 
         // Confirm and Place Order
         function confirmOrder() {
+            // Disable Button & Show Loading State
             const confirmBtn = document.querySelector('.btn-confirm');
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = "Placing Order...";
 
-            try {
-                // Disable Button & Show Loading State
-                confirmBtn.disabled = true;
-                confirmBtn.innerText = "Placing Order...";
+            // Prepare Data
+            const itemId = currentCustomizationItem.id;
+            const optionId = selectedCustomizations['main_option'] || '';
 
-                // Safety Timeout: Re-enable if nothing happens for 10s (network freeze)
-                setTimeout(() => {
-                    if (confirmBtn.disabled) {
-                        confirmBtn.disabled = false;
-                        confirmBtn.innerText = "Yes, Confirm";
-                        alert("Request timed out. Please try again.");
-                    }
-                }, 10000);
+            // Generate UUID for Idempotency logic
+            const requestId = crypto.randomUUID();
 
-                // Prepare Data
-                const itemId = currentCustomizationItem.id;
-                const optionId = selectedCustomizations['main_option'] || '';
+            // Populate Form
+            document.getElementById('formItemId').value = itemId;
+            document.getElementById('formOptionId').value = optionId;
+            document.getElementById('formRequestId').value = requestId;
 
-                // Generate UUID for Idempotency logic (Robust)
-                const requestId = generateUUID();
-
-                // Populate Form
-                document.getElementById('formItemId').value = itemId;
-                document.getElementById('formOptionId').value = optionId;
-                document.getElementById('formRequestId').value = requestId;
-
-                // Submit Form
-                document.getElementById('orderForm').submit();
-
-            } catch (error) {
-                console.error("Order Error:", error);
-                alert("An error occurred. Please try again.");
-                confirmBtn.disabled = false;
-                confirmBtn.innerText = "Yes, Confirm";
-            }
-        }
-
-        // Robust UUID Generator (Polyfill)
-        function generateUUID() {
-            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-                return crypto.randomUUID();
-            }
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
+            // Submit Form
+            document.getElementById('orderForm').submit();
         }
 
         // Close customization modal

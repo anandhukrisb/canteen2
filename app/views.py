@@ -107,9 +107,6 @@ def place_order(request):
     """
     Handles order submission from the user.
     """
-    print(f"--- POST /place_order received from {request.META.get('REMOTE_ADDR')} ---")
-    print(f"POST Data: {request.POST}")
-
      # Validate QR from session
     qr_id = request.session.get('qr_id')
     if not qr_id:
