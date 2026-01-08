@@ -10,10 +10,18 @@ import uuid
 
 class Canteen(models.Model):
     name = models.CharField(max_length=100)
-    
+    active_manager = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='managed_canteens',
+        help_text="The user currently responsible for this canteen's orders."
+    )
+    is_active = models.BooleanField(default=True, help_text="Uncheck to temporarily disable this canteen.")
 
     def __str__(self):
-        return self.name
+        return f"{self.name} (Manager: {self.active_manager.username if self.active_manager else 'None'})"
 
 
 # --------------------------------------------------
