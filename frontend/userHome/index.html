@@ -806,6 +806,29 @@
                 }, 1500); // Keep visible for at least 1.5s for effect
             });
 
+            // Fix Back Button / BFCache Logic
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                    // Page restored from cache (User pressed Back)
+                    // Reset modals and form
+                    closeCustomizationModal();
+                    closeConfirmationModal();
+                    document.getElementById('orderForm').reset();
+
+                    // Re-enable buttons if they were disabled
+                    const confirmBtn = document.querySelector('.btn-confirm');
+                    if (confirmBtn) {
+                        confirmBtn.disabled = false;
+                        confirmBtn.innerText = "Yes, Confirm";
+                    }
+                }
+            });
+
+            // Clean slate on load
+            closeCustomizationModal();
+            closeConfirmationModal();
+            document.getElementById('orderForm').reset();
+
             // Seat Number (from Backend)
             // Seat Number (removed)
 
