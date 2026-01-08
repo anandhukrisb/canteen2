@@ -1,11 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse,HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.db import transaction
 from .models import Order, QRCode, MenuItem, ItemOption
 import json
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def dashboard(request):
     new_count = Order.objects.filter(status='NEW').count()
     delivered_count = Order.objects.filter(status='DELIVERED').count()
@@ -29,23 +30,34 @@ def get_order_stats(request):
     })
 
 @require_POST
+@login_required
 def mark_order_done(request, order_id):
-    
-    order = get_object_or_404(Order, order_id=order_id)
+    #getting logged in manager
+    manager = request.user.manager
+    canteen = manager.canteen
+
+    order = get_object_or_404(Order, order_id=order_id,seat__lab__canteen=canteen)
     order.status = 'DELIVERED'
     order.save()
     return JsonResponse({'status': 'success'})
 
 
 def scan_qr(request, qr_id):
+    print(request.user)
+    # Validate QR code
     qr_obj = get_object_or_404(QRCode, qr_id=qr_id, is_active=True)
+
+    # Get seat, lab and canteen
     seat = qr_obj.seat
     canteen = seat.lab.canteen
-    
+
+    # Fetch menu only from this canteen
     menu_items = MenuItem.objects.filter(canteen=canteen, is_available=True).prefetch_related('options')
     
     # Serialize for frontend JS
     items_data = []
+
+    #loop       
     for item in menu_items:
         options_list = []
         if item.options.exists():
@@ -86,9 +98,12 @@ def place_order(request, qr_id):
     """
     Handles order submission from the user.
     """
+     # Validate QR
     qr_obj = get_object_or_404(QRCode, qr_id=qr_id, is_active=True)
+
+     # Get selected item
     item_id = request.POST.get('item_id')
-    option_id = request.POST.get(f'option_{item_id}') # Name format: option_<itemId>
+    option_id = request.POST.get(f'option_{item_id}') 
     
     if not item_id:
         return HttpResponse("Please select an item", status=400)
@@ -96,6 +111,7 @@ def place_order(request, qr_id):
     item = get_object_or_404(MenuItem, id=item_id)
     option = None
     
+    # Optional customization
     if option_id:
         option = get_object_or_404(ItemOption, id=option_id)
         # Validation: Option must belong to Item
@@ -109,5 +125,4 @@ def place_order(request, qr_id):
         option=option,
         status='NEW'
     )
-    
     return render(request, 'order_success.html', {'qr_id': qr_id, 'seat': qr_obj.seat})

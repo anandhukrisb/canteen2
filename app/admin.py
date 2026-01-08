@@ -9,6 +9,7 @@ admin.site.register(Seat)
 admin.site.register(MenuItem)
 admin.site.register(Order)
 admin.site.register(ItemOption)
+admin.site.register(CanteenManager)
 
 
 @admin.register(QRCode)
