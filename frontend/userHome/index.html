@@ -774,6 +774,13 @@
         <p class="success-subtitle" id="successMessage">Your order has been sent to the kitchen.</p>
     </div>
 
+    <!-- Hidden Order Form -->
+    <form id="orderForm" method="POST" action="{% url 'place_order' %}" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" name="item_id" id="formItemId">
+        <input type="hidden" name="option_id" id="formOptionId">
+    </form>
+
 
 
     <script>
@@ -894,45 +901,17 @@
         }
 
         // Confirm and Place Order
-        async function confirmOrder() {
-
-
+        function confirmOrder() {
             // Prepare Data
             const itemId = currentCustomizationItem.id;
-            // Get the first option ID if any (assuming single option group 'main_option')
-            const optionId = selectedCustomizations['main_option'] || null;
+            const optionId = selectedCustomizations['main_option'] || '';
 
-            const formData = new FormData();
-            formData.append('item_id', itemId);
-            if (optionId) {
-                formData.append('option_' + itemId, optionId);
-            }
+            // Populate Form
+            document.getElementById('formItemId').value = itemId;
+            document.getElementById('formOptionId').value = optionId;
 
-            try {
-                const csrftoken = getCookie('csrftoken');
-                const response = await fetch(`/place_order/${qrId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrftoken
-                    },
-                    body: formData
-                });
-
-                if (response.ok) {
-                    // Success! Replace the current page with the success page content returned by server
-                    const html = await response.text();
-                    document.open();
-                    document.write(html);
-                    document.close();
-                } else {
-                    alert('Failed to place order. Please try again.');
-                    closeConfirmationModal();
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Connection error');
-                closeConfirmationModal();
-            }
+            // Submit Form
+            document.getElementById('orderForm').submit();
         }
 
         // Close customization modal
@@ -941,22 +920,6 @@
             document.getElementById('modalOverlay').classList.remove('active');
             currentCustomizationItem = null;
             selectedCustomizations = {};
-        }
-
-        // Helper for CSRF
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
         }
 
         // Start app

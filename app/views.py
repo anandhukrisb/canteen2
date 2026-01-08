@@ -52,6 +52,10 @@ def scan_qr(request, qr_id):
     # Validate QR code
     qr_obj = get_object_or_404(QRCode, qr_id=qr_id, is_active=True)
 
+    # Store QR in session for persistence
+    request.session['qr_id'] = str(qr_id)
+
+
     # Get seat, lab and canteen
     seat = qr_obj.seat
     canteen = seat.lab.canteen
@@ -99,16 +103,20 @@ def scan_qr(request, qr_id):
     return render(request, 'userHome/index.html', context)
 
 @require_POST
-def place_order(request, qr_id):
+def place_order(request):
     """
     Handles order submission from the user.
     """
-     # Validate QR
+     # Validate QR from session
+    qr_id = request.session.get('qr_id')
+    if not qr_id:
+        return HttpResponse("Session expired or invalid QR. Please rescan.", status=400)
+
     qr_obj = get_object_or_404(QRCode, qr_id=qr_id, is_active=True)
 
      # Get selected item
     item_id = request.POST.get('item_id')
-    option_id = request.POST.get(f'option_{item_id}') 
+    option_id = request.POST.get('option_id')
     
     if not item_id:
         return HttpResponse("Please select an item", status=400)
