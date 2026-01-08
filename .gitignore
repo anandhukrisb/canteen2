@@ -3,7 +3,7 @@
 venv/
 .env
 
-# Python cache (VERY IMPORTANT)
+# Python cache (CRITICAL)
 __pycache__/
 *.pyc
 *.pyo
