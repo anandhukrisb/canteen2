@@ -117,6 +117,14 @@ def place_order(request):
      # Get selected item
     item_id = request.POST.get('item_id')
     option_id = request.POST.get('option_id')
+    request_id = request.POST.get('request_id')
+
+    # Idempotency Check
+    if request_id:
+        existing_order = Order.objects.filter(request_id=request_id).first()
+        if existing_order:
+            # Already created, redirect to success
+            return redirect('order_success')
     
     if not item_id:
         return HttpResponse("Please select an item", status=400)
@@ -136,6 +144,20 @@ def place_order(request):
         seat=qr_obj.seat,
         item=item,
         option=option,
-        status='NEW'
+        status='NEW',
+        request_id=request_id
     )
-    return render(request, 'order_success.html', {'qr_id': qr_id, 'seat': qr_obj.seat})
+    return redirect('order_success')
+
+def order_success(request):
+    qr_id = request.session.get('qr_id')
+    context = {}
+    if qr_id:
+        try:
+            qr_obj = QRCode.objects.get(qr_id=qr_id)
+            context['seat'] = qr_obj.seat
+            context['qr_id'] = qr_id
+        except QRCode.DoesNotExist:
+            pass
+            
+    return render(request, 'order_success.html', context)
