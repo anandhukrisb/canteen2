@@ -7,7 +7,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 
-# @login_required
+#@login_required
 def dashboard(request):
     new_count = Order.objects.filter(status='NEW').count()
     delivered_count = Order.objects.filter(status='DELIVERED').count()
