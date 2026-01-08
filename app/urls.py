@@ -1,5 +1,7 @@
 from . import views
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
@@ -9,3 +11,9 @@ urlpatterns = [
     path('scan/<uuid:qr_id>/', views.scan_qr, name='scan_qr'),
     path('place_order/<uuid:qr_id>/', views.place_order, name='place_order'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

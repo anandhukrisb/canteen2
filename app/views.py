@@ -6,7 +6,7 @@ from .models import Order, QRCode, MenuItem, ItemOption
 import json
 from django.contrib.auth.decorators import login_required
 
-@login_required
+# @login_required
 def dashboard(request):
     new_count = Order.objects.filter(status='NEW').count()
     delivered_count = Order.objects.filter(status='DELIVERED').count()
@@ -32,8 +32,13 @@ def get_order_stats(request):
 @require_POST
 @login_required
 def mark_order_done(request, order_id):
-    #getting logged in manager
-    manager = request.user.manager
+    
+    if not hasattr(request.user, 'canteenmanager'):
+        return HttpResponseForbidden("User is neither a Canteen Manager nor authorized.")
+
+    manager = request.user.canteenmanager
+
+
     canteen = manager.canteen
 
     order = get_object_or_404(Order, order_id=order_id,seat__lab__canteen=canteen)

@@ -5,7 +5,7 @@ from io import BytesIO
 
 def generate_qr(qr_code_obj):
 
-    qr_url = f"https://127.0.0.1:8000/order/{qr_code_obj.qr_id}"
+    qr_url = f"http://192.168.17.245:8000/scan/{qr_code_obj.qr_id}"
 
     qr = qrcode.make(qr_url)
 
