@@ -6,9 +6,6 @@ from .models import Order, QRCode, MenuItem, ItemOption, Canteen
 import json
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-import logging
-
-logger = logging.getLogger(__name__)
 
 @login_required
 def dashboard(request):
@@ -23,31 +20,17 @@ def dashboard(request):
     }
     return render(request, 'adminDash/index.html', context)
 
-@login_required
 def get_new_orders(request):
     status = request.GET.get('status', 'NEW')
-    
     # Filter by user's assigned canteens
     my_canteens = Canteen.objects.filter(active_manager=request.user)
-    
-    # Debug logging
-    logger.info(f"Dashboard Refresh [User: {request.user.username}]: Fetching {status} orders.")
-    logger.debug(f"Managed Canteens: {[c.name for c in my_canteens]}")
-
     orders = Order.objects.filter(status=status, seat__lab__canteen__in=my_canteens).order_by('-created_at')
-    
-    logger.info(f"Found {orders.count()} orders.")
-
     return render(request, 'adminDash/order_list_partial.html', {'orders': orders})
 
-@login_required
 def get_order_stats(request):
     my_canteens = Canteen.objects.filter(active_manager=request.user)
     new_count = Order.objects.filter(status='NEW', seat__lab__canteen__in=my_canteens).count()
     delivered_count = Order.objects.filter(status='DELIVERED', seat__lab__canteen__in=my_canteens).count()
-    
-    logger.debug(f"Stats [User: {request.user.username}]: New={new_count}, Delivered={delivered_count}")
-    
     return JsonResponse({
         'new_count': new_count,
         'delivered_count': delivered_count
