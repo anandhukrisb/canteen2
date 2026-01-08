@@ -3,7 +3,11 @@ from django.contrib import admin
 from .models import *
 from .utils.qr import generate_qr
 
-admin.site.register(Canteen)
+@admin.register(Canteen)
+class CanteenAdmin(admin.ModelAdmin):
+    list_display = ('name', 'active_manager', 'is_active')
+    list_editable = ('active_manager', 'is_active')
+
 admin.site.register(Lab)
 admin.site.register(Seat)
 admin.site.register(MenuItem)

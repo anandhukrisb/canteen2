@@ -2,15 +2,19 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse,HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.db import transaction
-from .models import Order, QRCode, MenuItem, ItemOption
+from .models import Order, QRCode, MenuItem, ItemOption, Canteen
 import json
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 
-#@login_required
+@login_required
+# @login_required
 def dashboard(request):
-    new_count = Order.objects.filter(status='NEW').count()
-    delivered_count = Order.objects.filter(status='DELIVERED').count()
+    # Get all canteens managed by this user
+    my_canteens = Canteen.objects.filter(active_manager=request.user)
+    
+    new_count = Order.objects.filter(status='NEW', seat__lab__canteen__in=my_canteens).count()
+    delivered_count = Order.objects.filter(status='DELIVERED', seat__lab__canteen__in=my_canteens).count()
     context = {
         'new_count': new_count,
         'delivered_count': delivered_count
@@ -19,12 +23,15 @@ def dashboard(request):
 
 def get_new_orders(request):
     status = request.GET.get('status', 'NEW')
-    orders = Order.objects.filter(status=status).order_by('-created_at')
+    # Filter by user's assigned canteens
+    my_canteens = Canteen.objects.filter(active_manager=request.user)
+    orders = Order.objects.filter(status=status, seat__lab__canteen__in=my_canteens).order_by('-created_at')
     return render(request, 'adminDash/order_list_partial.html', {'orders': orders})
 
 def get_order_stats(request):
-    new_count = Order.objects.filter(status='NEW').count()
-    delivered_count = Order.objects.filter(status='DELIVERED').count()
+    my_canteens = Canteen.objects.filter(active_manager=request.user)
+    new_count = Order.objects.filter(status='NEW', seat__lab__canteen__in=my_canteens).count()
+    delivered_count = Order.objects.filter(status='DELIVERED', seat__lab__canteen__in=my_canteens).count()
     return JsonResponse({
         'new_count': new_count,
         'delivered_count': delivered_count
@@ -34,15 +41,11 @@ def get_order_stats(request):
 @login_required
 def mark_order_done(request, order_id):
     
-    if not hasattr(request.user, 'canteenmanager'):
-        return HttpResponseForbidden("User is neither a Canteen Manager nor authorized.")
+    # Verify user manages the canteen for this order
+    order = get_object_or_404(Order, order_id=order_id)
+    if order.seat.lab.canteen.active_manager != request.user:
+         return HttpResponseForbidden("You are not the active manager for this order's canteen.")
 
-    manager = request.user.canteenmanager
-
-
-    canteen = manager.canteen
-
-    order = get_object_or_404(Order, order_id=order_id,seat__lab__canteen=canteen)
     order.status = 'DELIVERED'
     order.save()
     return JsonResponse({'status': 'success'})
