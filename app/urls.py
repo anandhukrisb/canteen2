@@ -10,6 +10,7 @@ urlpatterns = [
     path('mark_order_done/<uuid:order_id>/', views.mark_order_done, name='mark_order_done'),
     path('scan/<uuid:qr_id>/', views.scan_qr, name='scan_qr'),
     path('place_order/', views.place_order, name='place_order'),
+    path('order_success/', views.order_success, name='order_success'),
 ]
 
 if settings.DEBUG:

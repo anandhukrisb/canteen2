@@ -779,6 +779,7 @@
         {% csrf_token %}
         <input type="hidden" name="item_id" id="formItemId">
         <input type="hidden" name="option_id" id="formOptionId">
+        <input type="hidden" name="request_id" id="formRequestId">
     </form>
 
 
@@ -902,13 +903,22 @@
 
         // Confirm and Place Order
         function confirmOrder() {
+            // Disable Button & Show Loading State
+            const confirmBtn = document.querySelector('.btn-confirm');
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = "Placing Order...";
+
             // Prepare Data
             const itemId = currentCustomizationItem.id;
             const optionId = selectedCustomizations['main_option'] || '';
 
+            // Generate UUID for Idempotency logic
+            const requestId = crypto.randomUUID();
+
             // Populate Form
             document.getElementById('formItemId').value = itemId;
             document.getElementById('formOptionId').value = optionId;
+            document.getElementById('formRequestId').value = requestId;
 
             // Submit Form
             document.getElementById('orderForm').submit();

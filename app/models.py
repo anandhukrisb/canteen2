@@ -144,6 +144,13 @@ class Order(models.Model):
         editable=False
     )
 
+    request_id = models.UUIDField(
+        null=True,
+        blank=True,
+        unique=True,
+        help_text="Idempotency key to prevent duplicate orders"
+    )
+
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
     item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
 
