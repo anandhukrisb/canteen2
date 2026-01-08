@@ -5,6 +5,7 @@ from django.db import transaction
 from .models import Order, QRCode, MenuItem, ItemOption
 import json
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 
 # @login_required
 def dashboard(request):
@@ -152,6 +153,7 @@ def place_order(request):
     )
     return redirect('order_success')
 
+@never_cache
 def order_success(request):
     qr_id = request.session.get('qr_id')
     context = {}
