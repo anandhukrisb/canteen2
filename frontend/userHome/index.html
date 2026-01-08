@@ -16,7 +16,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(to bottom, #f0fdf4, #ffffff);
+            background: linear-gradient(to bottom, #FFF4E0, #ffffff);
             min-height: 100vh;
             padding-bottom: 100px;
             padding-top: 160px;
@@ -178,7 +178,7 @@
             background: white;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 119, 32, 0.15);
+            box-shadow: 0 10px 30px rgba(159, 115, 79, 0.15);
             transition: all 0.3s ease;
             cursor: pointer;
             animation: fadeInUp 0.5s ease-out both;
@@ -186,7 +186,7 @@
 
         .food-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 119, 32, 0.25);
+            box-shadow: 0 20px 40px rgba(159, 115, 79, 0.25);
         }
 
         .food-card:active {
@@ -373,13 +373,13 @@
         }
 
         .option-button:hover {
-            border-color: #007720;
+            border-color: #9f734f;
         }
 
         .option-button.selected {
-            background: linear-gradient(to right, #007720, #00a82d);
+            background: linear-gradient(to right, #9f734f, #7E5130);
             color: white;
-            border-color: #007720;
+            border-color: #9f734f;
             font-weight: 600;
         }
 
@@ -389,7 +389,7 @@
 
         .primary-button {
             width: 100%;
-            background: linear-gradient(to right, #007720, #00a82d);
+            background: linear-gradient(to right, #9f734f, #7E5130);
             color: white;
             border: none;
             padding: 16px;
@@ -397,7 +397,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(0, 119, 32, 0.4);
+            box-shadow: 0 8px 25px rgba(159, 115, 79, 0.4);
             transition: all 0.3s ease;
         }
 
@@ -431,7 +431,7 @@
         #splash-screen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #007720 0%, #00a82d 100%);
+            background: linear-gradient(135deg, #9f734f 0%, #7E5130 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -572,18 +572,18 @@
             padding: 14px;
             border-radius: 16px;
             border: none;
-            background: linear-gradient(to right, #007720, #00a82d);
+            background: linear-gradient(to right, #9f734f, #7E5130);
             color: white;
             font-weight: 600;
             cursor: pointer;
             font-size: 15px;
-            box-shadow: 0 4px 12px rgba(0, 119, 32, 0.2);
+            box-shadow: 0 4px 12px rgba(159, 115, 79, 0.2);
             transition: all 0.2s;
         }
 
         .btn-confirm:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 119, 32, 0.3);
+            box-shadow: 0 6px 16px rgba(159, 115, 79, 0.3);
         }
 
         /* Success Overlay */
@@ -615,7 +615,7 @@
             display: inline-block;
             vertical-align: top;
             border-radius: 50%;
-            background-color: #007720;
+            background-color: #9f734f;
             margin-bottom: 24px;
             animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -689,8 +689,8 @@
                 <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
                     <defs>
                         <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#007720;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#00a82d;stop-opacity:1" />
+                            <stop offset="0%" style="stop-color:#9f734f;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#7E5130;stop-opacity:1" />
                         </linearGradient>
                     </defs>
                     <rect width="1440" height="320" fill="url(#headerGradient)" />
@@ -711,16 +711,10 @@
                     </div>
                     <div class="logo-text">
                         <h1>R-Bites</h1>
-                        <p>Dine-in ordering made easy</p>
+                        <p>Refreshments, right to your seat</p>
                     </div>
                 </div>
-                <div class="seat-badge">
-                    <svg class="icon-sm" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                    </svg>
-                    <span>Seat: <span id="seatNumber">C1</span></span>
-                </div>
+
             </div>
         </header>
     </div>
@@ -751,7 +745,7 @@
         </div>
         <div id="customizationOptions"></div>
         <div class="modal-action">
-            <button class="primary-button" onclick="placeDirectOrder()">Order</button>
+            <button class="primary-button" onclick="placeDirectOrder()">Request Refreshment</button>
         </div>
     </div>
 
@@ -760,8 +754,8 @@
 
     <!-- Confirmation Modal -->
     <div class="confirmation-modal" id="confirmationModal">
-        <h3 class="confirmation-title">Confirm Order</h3>
-        <p class="confirmation-text">Are you sure you want to place this order?</p>
+        <h3 class="confirmation-title">Confirm Request</h3>
+        <p class="confirmation-text">Are you sure you want to place this request?</p>
         <div class="confirmation-actions">
             <button class="btn-cancel" onclick="closeConfirmationModal()">Cancel</button>
             <button class="btn-confirm" onclick="confirmOrder()">Yes, Confirm</button>
@@ -805,7 +799,8 @@
             });
 
             // Seat Number (from Backend)
-            document.getElementById('seatNumber').textContent = "{{ seat.seat_number }}";
+            // Seat Number (removed)
+
 
             // Render food items
             renderFoodItems();
@@ -900,7 +895,7 @@
 
         // Confirm and Place Order
         async function confirmOrder() {
-            const seatNumber = document.getElementById('seatNumber').textContent;
+
 
             // Prepare Data
             const itemId = currentCustomizationItem.id;
