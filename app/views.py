@@ -150,4 +150,14 @@ def place_order(request):
     return redirect('order_success')
 
 def order_success(request):
-    return render(request, 'order_success.html')
+    qr_id = request.session.get('qr_id')
+    context = {}
+    if qr_id:
+        try:
+            qr_obj = QRCode.objects.get(qr_id=qr_id)
+            context['seat'] = qr_obj.seat
+            context['qr_id'] = qr_id
+        except QRCode.DoesNotExist:
+            pass
+            
+    return render(request, 'order_success.html', context)

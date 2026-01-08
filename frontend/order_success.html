@@ -60,6 +60,21 @@
     <!-- No back button as per requirement -->
     <!-- <a href="{% url 'scan_qr' qr_id %}" class="btn-again">Order Something Else</a> -->
 
+    <p style="font-size: 0.9em; margin-top: 20px;">Rediecting to menu in <span id="countdown">5</span> seconds...</p>
+
+    <script>
+        let seconds = 5;
+        const countdownEl = document.getElementById('countdown');
+
+        setInterval(() => {
+            seconds--;
+            if (countdownEl) countdownEl.innerText = seconds;
+            if (seconds <= 0) {
+                window.location.replace("{% url 'scan_qr' qr_id %}");
+            }
+        }, 1000);
+    </script>
+
 </body>
 
 </html>
