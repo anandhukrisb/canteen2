@@ -2,10 +2,11 @@
 import qrcode
 from django.core.files.base import ContentFile
 from io import BytesIO
+from django.conf import settings 
 
 def generate_qr(qr_code_obj):
 
-    qr_url = f"https://127.0.0.1:8000/order/{qr_code_obj.qr_id}"
+    qr_url =  f"{settings.SITE_URL}/scan/{qr_code_obj.qr_id}/"
 
     qr = qrcode.make(qr_url)
 
