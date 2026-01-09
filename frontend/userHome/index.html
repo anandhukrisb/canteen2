@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <title>R-bites - Dine-in Ordering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(to bottom, #FFF4E0, #ffffff);
+            min-height: 100vh;
+            padding-bottom: 100px;
+            padding-top: 160px;
+            /* Space for fixed header + categories - increased to preventing cropping on smaller screens */
+        }
+
+        /* Fixed Container for Header + Categories */
+        .sticky-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: transparent;
+        }
+
+        /* Header */
+        header {
+            background: transparent;
+            color: white;
+            padding: 15px 24px 30px 24px;
+            /* Sticky moved to container */
+            position: relative;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        .header-bg svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .header-content {
+            max-width: 448px;
+            margin: 0 auto;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            /* margin-bottom removed for flex alignment */
+        }
+
+        .logo-icon {
+            font-size: 32px;
+            animation: swing 2s ease-in-out 3s infinite;
+        }
+
+        @keyframes swing {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-10deg);
+            }
+
+            50% {
+                transform: rotate(10deg);
+            }
+
+            75% {
+                transform: rotate(-10deg);
+            }
+        }
+
+        /* Removed old .header-wave styles */
+
+        .logo-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .logo-text p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .seat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 999px;
+            white-space: nowrap;
+            /* Prevent wrapping */
+            flex-shrink: 0;
+            /* Prevent squashing */
+            /* Pill shape */
+            padding: 8px 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Food Grid - Spacing adjustment since categories are gone */
+        main {
+            max-width: 448px;
+            margin: 0 auto;
+            padding: 0 16px;
+            margin-top: 20px;
+            /* Space for fixed header */
+        }
+
+
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(159, 115, 79, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: fadeInUp 0.5s ease-out both;
+        }
+
+        .food-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(159, 115, 79, 0.25);
+        }
+
+        .food-card:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .food-card-image {
+            position: relative;
+            height: 192px;
+            overflow: hidden;
+        }
+
+        .food-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .food-card:hover .food-card-image img {
+            transform: scale(1.1);
+        }
+
+        .food-card-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+        }
+
+        .food-card-content {
+            padding: 16px;
+        }
+
+        .food-card-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .food-card-content p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .food-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .food-card-price {
+            display: none;
+        }
+
+        .add-button {
+            display: none;
+        }
+
+
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+
+        /* Customization Modal */
+        .customization-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            width: 90%;
+            max-width: 448px;
+            z-index: 50;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            display: none;
+            animation: modalIn 0.3s ease-out forwards;
+        }
+
+        .customization-modal.active {
+            display: block;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .modal-title h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .modal-title p {
+            display: none;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: #f3f4f6;
+        }
+
+        .customization-section {
+            margin-bottom: 16px;
+        }
+
+        .customization-label {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .option-button {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-button:hover {
+            border-color: #9f734f;
+        }
+
+        .option-button.selected {
+            background: linear-gradient(to right, #9f734f, #7E5130);
+            color: white;
+            border-color: #9f734f;
+            font-weight: 600;
+        }
+
+        .modal-action {
+            margin-top: 24px;
+        }
+
+        .primary-button {
+            width: 100%;
+            background: linear-gradient(to right, #9f734f, #7E5130);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(159, 115, 79, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .primary-button:hover {
+            transform: scale(1.02);
+        }
+
+        .primary-button:active {
+            transform: scale(0.98);
+        }
+
+
+
+        /* Icons */
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #9f734f 0%, #7E5130 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #splash-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .splash-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .splash-title {
+            font-size: 32px;
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        /* Confirmation Overlay */
+        .confirmation-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .confirmation-overlay.active {
+            display: block;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            width: 85%;
+            max-width: 380px;
+            z-index: 2001;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            display: none;
+            animation: modalIn 0.3s ease-out forwards;
+            text-align: center;
+        }
+
+        .confirmation-modal.active {
+            display: block;
+        }
+
+        .confirmation-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .confirmation-text {
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn-confirm {
+            flex: 1;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(to right, #9f734f, #7E5130);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(159, 115, 79, 0.2);
+            transition: all 0.2s;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(159, 115, 79, 0.3);
+        }
+
+        /* Success Overlay */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Success Animation */
+        .checkmark-circle {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            display: inline-block;
+            vertical-align: top;
+            border-radius: 50%;
+            background-color: #9f734f;
+            margin-bottom: 24px;
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 8px;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out 0.2s forwards;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .success-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out 0.3s forwards;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <svg class="splash-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                <path d="M7 2v20"></path>
+                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+            </svg>
+            <h1 class="splash-title">R-Bites</h1>
+            <div class="loader"></div>
+        </div>
+    </div>
+
+
+    <div class="sticky-container">
+        <!-- Header -->
+        <header>
+            <div class="header-bg">
+                <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#9f734f;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#7E5130;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="1440" height="320" fill="url(#headerGradient)" />
+                    <path fill="#ffffff"
+                        d="M0,290 L80,283 C160,276,320,262,480,265 C640,268,800,290,960,295 C1120,300,1280,283,1360,278 L1440,268 L1440,320 L1360,320 C1280,320,1120,320,960,320 C800,320,640,320,480,320 C320,320,160,320,80,320 L0,320 Z">
+                    </path>
+                </svg>
+            </div>
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                            <path d="M7 2v20"></path>
+                            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>R-Bites</h1>
+                        <p>Refreshments, right to your seat</p>
+                    </div>
+                </div>
+
+            </div>
+        </header>
+    </div>
+
+    <!-- Food Grid -->
+    <main>
+        <div class="food-grid" id="foodGrid"></div>
+    </main>
+
+
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+
+    <!-- Customization Modal -->
+    <div class="customization-modal" id="customizationModal">
+        <div class="modal-header">
+            <div class="modal-title">
+                <h3 id="modalItemName">Chai</h3>
+                <p id="modalItemPrice">₹15.00</p>
+            </div>
+            <button class="close-button" onclick="closeCustomizationModal()">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div id="customizationOptions"></div>
+        <div class="modal-action">
+            <button class="primary-button" onclick="placeDirectOrder()">Request Refreshment</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Overlay -->
+    <div class="confirmation-overlay" id="confirmationOverlay"></div>
+
+    <!-- Confirmation Modal -->
+    <div class="confirmation-modal" id="confirmationModal">
+        <h3 class="confirmation-title">Confirm Request</h3>
+        <p class="confirmation-text">Are you sure you want to place this request?</p>
+        <div class="confirmation-actions">
+            <button class="btn-cancel" onclick="closeConfirmationModal()">Cancel</button>
+            <button class="btn-confirm" onclick="confirmOrder()">Yes, Confirm</button>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="checkmark-circle">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <path class="checkmark-check" fill="none" stroke="#fff" stroke-width="5"
+                    d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
+        </div>
+        <h2 class="success-title">Order Placed!</h2>
+        <p class="success-subtitle" id="successMessage">Your order has been sent to the kitchen.</p>
+    </div>
+
+    <!-- Hidden Order Form--> 
+    <form id="orderForm" method="POST" action="{% url 'place_order' qr_id %}" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" name="item_id" id="formItemId">
+        <input type="hidden" name="option_id" id="formOptionId">
+        <!-- <input type="hidden" name="request_id" id="formRequestId"> -->
+    </form>
+
+
+
+    <script>
+        // Food Items Data (Injected from Backend)
+        const foodItems = {{ menu_items_json| safe }};
+        const qrId = "{{ qr_id }}";
+
+        // State
+        let currentCustomizationItem = null;
+        let selectedCustomizations = {};
+
+        // Initialize
+        function init() {
+            // Splash Screen Logic
+            window.addEventListener('load', () => {
+                const splash = document.getElementById('splash-screen');
+                setTimeout(() => {
+                    splash.classList.add('fade-out');
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                    }, 500); // Wait for transition to finish
+                }, 1500); // Keep visible for at least 1.5s for effect
+            });
+
+            // Fix Back Button / BFCache Logic
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                    // Page restored from cache (User pressed Back)
+                    // Reset modals and form
+                    closeCustomizationModal();
+                    closeConfirmationModal();
+                    document.getElementById('orderForm').reset();
+
+                    // Re-enable buttons if they were disabled
+                    const confirmBtn = document.querySelector('.btn-confirm');
+                    if (confirmBtn) {
+                        confirmBtn.disabled = false;
+                        confirmBtn.innerText = "Yes, Confirm";
+                    }
+                }
+            });
+
+            // Clean slate on load
+            closeCustomizationModal();
+            closeConfirmationModal();
+            document.getElementById('orderForm').reset();
+
+            // Seat Number (from Backend)
+            // Seat Number (removed)
+
+
+            // Render food items
+            renderFoodItems();
+
+            // Modal overlay
+            document.getElementById('modalOverlay').addEventListener('click', () => {
+                closeCustomizationModal();
+            });
+        }
+
+        // Render food items
+        function renderFoodItems() {
+            const grid = document.getElementById('foodGrid');
+            if (foodItems.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666;">No items available.</p>';
+                return;
+            }
+            grid.innerHTML = foodItems.map((item, index) => `
+                <div class="food-card" style="animation-delay: ${index * 0.05}s" onclick="openCustomizationModal(${item.id})">
+                    <div class="food-card-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="food-card-content">
+                        <h3>${item.name}</h3>
+                        <p>${item.description || ''}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open customization modal
+        function openCustomizationModal(itemId) {
+            const item = foodItems.find(i => i.id === itemId);
+            currentCustomizationItem = item;
+            selectedCustomizations = {};
+
+            document.getElementById('modalItemName').textContent = item.name;
+            document.getElementById('modalItemPrice').style.display = 'none'; // No price
+
+            if (!item.customizations || item.customizations.length === 0) {
+                // No options
+                document.getElementById('customizationOptions').innerHTML = '<p class="customization-label" style="text-align:center;">No options available</p>';
+            } else {
+                const optionsHTML = item.customizations.map(custom => `
+                    <div class="customization-section">
+                        <label class="customization-label">${custom.label}</label>
+                        <div class="options-grid">
+                            ${custom.options.map(option => `
+                                <button class="option-button" onclick="selectOption('${custom.id}', '${option.id}', this)">
+                                    ${option.name}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('customizationOptions').innerHTML = optionsHTML;
+            }
+
+            document.getElementById('customizationModal').classList.add('active');
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        // Select customization option
+        function selectOption(customizationId, optionId, sourceBtn) {
+            selectedCustomizations[customizationId] = optionId;
+
+            // Update UI
+            // Only update buttons for this specific customization group
+            const buttons = sourceBtn.closest('.options-grid').querySelectorAll('.option-button');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            sourceBtn.classList.add('selected');
+        }
+
+        // Place Direct Order (Show Confirmation)
+        function placeDirectOrder() {
+            if (currentCustomizationItem) {
+                // If item has options, ensure one is selected? 
+                // Currently backend treats option as optional unless enforced. 
+                // Let's simple check if options exist, user picked one? 
+                // For simplicity, we allow proceed.
+
+                document.getElementById('confirmationOverlay').classList.add('active');
+                document.getElementById('confirmationModal').classList.add('active');
+            }
+        }
+
+        // Close Confirmation
+        function closeConfirmationModal() {
+            document.getElementById('confirmationOverlay').classList.remove('active');
+            document.getElementById('confirmationModal').classList.remove('active');
+        }
+
+        // Confirm and Place Order
+        function confirmOrder() {
+            const confirmBtn = document.querySelector('.btn-confirm');
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = "Placing Order...";
+
+            const itemId = currentCustomizationItem.id;
+            const optionId = selectedCustomizations['main_option'] || '';
+            // Populate hidden form fields
+            document.getElementById('formItemId').value = itemId;
+            document.getElementById('formOptionId').value = optionId;
+            
+            // Submit the form
+            document.getElementById('orderForm').submit();
+    }
+
+
+        // Close customization modal
+        function closeCustomizationModal() {
+            document.getElementById('customizationModal').classList.remove('active');
+            document.getElementById('modalOverlay').classList.remove('active');
+            currentCustomizationItem = null;
+            selectedCustomizations = {};
+        }
+
+        // Start app
+        init();
+    </script>
+</body>
+
+</html>

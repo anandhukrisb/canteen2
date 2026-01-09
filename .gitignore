@@ -1,0 +1,12 @@
+# Virtual environments
+*env/
+venv/
+.env
+
+# Python cache (CRITICAL)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+

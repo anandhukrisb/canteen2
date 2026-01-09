@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-Bites Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'adminDash/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    {% csrf_token %}
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-area">
+                <span class="logo-icon">Ψq</span> <!-- Mocking the logo from image -->
+                <div class="logo-text">
+                    <h1>R-Bites</h1>
+                    <p>Admin Dashboard</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <nav id="main-nav" class="nav-menu">
+                    <!-- <a href="#" class="nav-link">Add Products</a>
+                    <a href="#" class="nav-link">Add Venue</a> -->
+                </nav>
+                <button id="refresh-btn" class="icon-btn" title="Refresh Orders" onclick="fetchOrders()">↻</button>
+                <button id="nav-toggle" class="icon-btn hamburger" title="Toggle Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <!-- Filter active -->
+        <div class="filter-toggle-container">
+            <div class="toggle-switch">
+                <div class="toggle-slider"></div>
+                <button class="toggle-option active" data-filter="NEW" onclick="setFilter('NEW')">
+                    Pending <span class="count-badge" id="count-new">{{ new_count|default:0 }}</span>
+                </button>
+                <button class="toggle-option" data-filter="DELIVERED" onclick="setFilter('DELIVERED')">
+                    Completed <span class="count-badge" id="count-done">{{ delivered_count|default:0 }}</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="orders-section">
+            <h2>Live Orders <span id="count-badge" class="count-badge">0</span></h2>
+            <ul id="orders-list" class="orders-list">
+                <!-- Orders will be injected here by JS -->
+                <li style="text-align:center; padding:40px; color:#999;">Loading...</li>
+            </ul>
+        </div>
+    </main>
+
+    <script src="{% static 'adminDash/script.js' %}"></script>
+</body>
+
+</html>
