@@ -120,6 +120,6 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'frontend',
 ]
-SITE_URL = "http://192.168.21.119:8000" 
+SITE_URL = "http://192.168.17.245:8000" 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
